@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 // Roblox Top Trending forecaster (Node 22, standard library only).
 //
 // Reads /input/history.ndjson (every read of the chart, oldest first) and /input/task.json, writes
