@@ -26,5 +26,15 @@ overlapping, so the standard error of a mean is about 0.9 nats).
 - Rejected: run-time grid tuning (nested walk-forward -18.85 vs -18.88 for fixed parameters); parameter ensembles
   over tau or kernel width (all within 0.05 nats); unnamed-mass schedules (worse); a random search over 9 parameters
   did not transfer between the two halves of the windows.
+- Ensemble of different algorithm families (`research/families.ts`, `research/stack.mjs`, 37 windows, Nov 9): kernel +
+  dropout -18.42, kernel + momentum (alt.ts) -18.08, empirical-Bayes transition model (rank bucket x 12-24 h trend,
+  shrunk toward the kernel) -20.44, daily-cycle occupancy model -22.34. Every blend that adds the last two is worse
+  than the production 50/50 of the first two (-18.17): linear K,A,M,S 40/40/10/10 -18.44, K,A,S 45/45/10 -18.34,
+  K,A,M(strong prior) -18.28, log-linear pooling -18.18 to -18.27. Best weights on one half of the windows do not
+  beat 50/50 on the other half by more than 0.1 nat, which is noise (standard error 0.9). So production keeps the two
+  families that carry information and gives the others zero weight.
+- Does rank slope, player growth or tenure predict a top-15 game's future rank change beyond its current rank?
+  Spearman of the residual: 24 h rank slope -0.11 (weak momentum, already in alt.ts), player growth +0.06, tenure
+  +0.02 (555 game-windows).
 - Other countries' charts correlate 0.4-0.9 with the US chart (recorded hourly in `research/`); whether they lead it
   is being checked and nothing from them is used unless it clears a held-out test.
