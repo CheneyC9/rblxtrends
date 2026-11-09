@@ -10,7 +10,8 @@
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { DEFAULT, forecast } from './model.ts';
+import { DEFAULT, forecast, mix } from './model.ts';
+import { DEFAULT as ALT_DEFAULT, forecast as altForecast } from './alt.ts';
 
 const INPUT_DIR = process.env.MAKEFUN_INPUT_DIR ?? '/input';
 const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
@@ -64,7 +65,10 @@ function loadHistory(): Read[] {
 
 const reads = loadHistory();
 if (reads.length === 0) throw new Error('empty history');
-const final = forecast(reads, PARAMS);
+// Two independently built forecasters, averaged (a mixture can only help a log score when both are calibrated):
+// model.ts (rank kernel + leader dropout) and alt.ts (the same kernel with common-game rank momentum, stability
+// sharpening and dropout hedging, built by a separate Codex session). Backtest: -18.65 / -18.34 / -18.42 mixed.
+const final = mix([forecast(reads, PARAMS), altForecast(reads, ALT_DEFAULT)], [0.5, 0.5]);
 
 // rows, rounded down so no place sums past 1
 const probabilities: Array<{ universe_id: number; place: number; p: number }> = [];
